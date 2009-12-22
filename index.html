@@ -1,0 +1,30 @@
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Audio Test Page</title>
+    
+    <script type="text/javascript" charset="utf-8" src="/js/mootools-1.2.4-core.js "></script>
+    <script type="text/javascript" src="/js/mootools-cnet-debug.js"></script> 
+    
+    <script type="text/javascript" charset="utf-8" src="js/AudioCheck-nc.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/mtAudioPlayer-nc.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/mtAudioPlayer.UI-nc.js"></script>    
+    
+    <link rel="stylesheet" href="css/mtAudio-nc.css" type="text/css" media="screen" title="mtAudio Player Style Sheet" charset="utf-8">
+    
+    <script type="text/javascript" charset="utf-8">
+        var player;
+        window.addEvent("domready", function(){
+           player = new mtAudioPlayerUI( { player : new mtAudioPlayer({ tracks : ["mp3/Truth of the Legend.mp3", "mp3/MTA.mp3", "mp3/What You Want ver 2.mp3" ] }) }).inject();
+        });
+    </script>
+</head>
+
+
+<body id="at">
+    <p>
+        <a href="http://html5doctor.com/native-audio-in-the-browser/">Reference</a>
+    </p>
+</body>
+
+</html>

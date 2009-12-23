@@ -3,10 +3,13 @@ var mtAudioPlayer = new Class({
   options: {
       "class"   : "mtAPlayer",
       id        : false,
-      tracks    : ["sample.mp3"],
+      tracks    : [],
       parent    : null,
       auto      : false,
       repeat    : false,
+      volume    : 20,   /* 0 - 100 */
+      format    : false,
+      formats   : ["mp3", "ogg"],
       onLoading : function(t){ dbug.log("Loading : " + t); },
       onError   : function(code){ 
                     if(code == 4){
@@ -15,9 +18,11 @@ var mtAudioPlayer = new Class({
                     throw("mtAudioPlayer Unrecognized Error; code: " + code);
                 }
   },
-  tracks      : $H({}),
-  currTrack   : 0,
-  isPlaying   : false,
+  tracks        : $H({}),
+  currTrack     : 0,
+  isPlaying     : false,
+  muted         : false,
+  format        : false,
   toElement: function(){ return this.element; },
   initialize: function(ops){
     this.setOptions(ops);
@@ -27,41 +32,42 @@ var mtAudioPlayer = new Class({
     this.soundCheck = new AudioCheck();    
     if(!this.soundCheck.check())
       throw("HTML5 audio is not supported");
-    
-    var pt         = this.pruneTracks(this.options.tracks);    
-    if(pt[1].length)
-        this.fireEvent("prune", pt[1]);
-    if(pt[0].length <= 0){
-      throw("No supported tracks found");
+
+    this.format = this.options.format ? this.options.format : this.determineFormat();
+    if(!this.format){
+        throw("No supported format found");
     }
-    this.makePlayList(pt[0]);
     
-    this.addEvents();
+
+    this.makePlayList(this.options.tracks);
+    
     
     this.element  = new Element('div', { id : this.options.id ? this.options.id : "mtaudio-"+ Math.floor(Math.random()*1000000000).toString(16), "class" : this.options["class"] });
     
+  },
+  determineFormat : function(){
+      dbug.log("determineFormat");
+      for(var i = 0; i < this.options.formats.length; i++){
+          dbug.log("checking " + this.options.formats[i]);
+          if(this.soundCheck.check(this.options.formats[i])){
+              return this.options.formats[i];
+          }
+      }
   },
   getMediaType: function(t){
       if(typeof t == "string")
         return t.substring( t.lastIndexOf(".") + 1 );
   },
   makePlayList: function(arr){
-    for(var i = 0; i < arr.length; i++){
-      this.tracks[arr[i]] = { file: arr[i], pos : 0, audio : new Audio("") };
-    }
-  },
-  /* Prune cannot be called after the tracks have been converted to objects */
-  pruneTracks: function(tracks){
-      var pruned = [];
-      var l = tracks.length;
-      for(var i = 0; i < l; i++){
-          if( !this.soundCheck.check(this.getMediaType(tracks[i])) ){
-              pruned.push(tracks.splice(i,1));
-          }
-      }
-      return [tracks, pruned];
+        dbug.log("makePlaylist()");
+        dbug.log(arr);
+        var track;
+        for(var i = 0; i < arr.length; i++){
+            this.addTrack(arr[i]);
+        }
   },
   cacheNext: function(){
+      dbug.log("mtAudioPlayer::cacheNext()");
     var next = this.currTrack + 1;
     if(next >= this.tracks.getLength())
       return;
@@ -69,35 +75,78 @@ var mtAudioPlayer = new Class({
     var t = this.getTrack(next);
       if(!t.audio.get("src")){
           t.audio.set("src",t.file);
+          this.addEvents(t);
           t.audio.load();
           this.fireEvent("loading", t.file);
       }
 
       return this;
   },
-  addEvents: function(){
-    var my = this;
-    this.tracks.each(function(track, name){
-        track.audio.addEvent("error", function(){
-            dbug.log("Caught Error");
-            my.fireEvent("error",track.audio.error.code);
-        });
-        track.audio.addEvent("abort", function(){
-            dbug.log("Caught Abort");
-            my.fireEvent("abort");
-        });      
-        track.audio.addEvent("timeupdate", function(){
-            dbug.log("Caught timeupdate");
-        });
-        track.audio.addEvent("waiting", function(){
-            dbug.log("Caught waiting");
-        });
-        track.audio.addEvent("ended", function(){
-            dbug.log("ended");
-        });
-    })
-    
-    
+  addEvents: function(track){
+        dbug.log("mtAudioPlayer::addEvents(track)");
+        
+        try{
+             var my = this;
+             var dbugEvents = [ ]/* "timeupdate", "waiting", "ended", "loadstart", "progress", "emptied", "stalled", 
+                                 "play", "pause", "loadedmetadata", "loadeddata", "waiting", "playing", "canplay", 
+                                 "canplaythrough", "seeking", "seeked", "timeupdate", "ended", "ratechange", 
+                                 "durationchange", "volumechange", "abort", "error"];*/
+             var pushEvents = [ "play", "pause", "ended", "dataunavailable", "loadedmetadata", "progress" ]
+
+                     track.audio.addEventListener("error", function(){
+                         dbug.log("Caught Error " + name);
+                         my.fireEvent("error", name, track.audio.error.code);
+                     },true);
+                     track.audio.addEventListener("abort", function(){
+                         my.fireEvent("abort", name);
+                     },true);      
+                     track.audio.addEvent
+
+                     $each(pushEvents, function(e){
+                         if(!e)
+                            return;
+                         track.audio.addEventListener(e, function(){
+                            my.fireEvent(e,track);
+                         }, true);
+                     });
+
+
+                     if(dbug.enabled){
+                         $each(dbugEvents, function(e){
+                             track.audio.addEventListener(e, function(){
+                                my.fireEvent(e,track);
+                             }, true);
+                         });
+                     }
+
+
+             this.addEvent("progress", function(track){
+                  track.audio.buffered && track.audio.buffered.end && this.fireEvent("buffered", [track, track.audio.buffered.end()]);
+             });
+
+            this.addEvent("loadedmetadata", function(track){
+                if(track.file == my.getTrack().file)
+                     my.setDuration();
+            });
+
+            this.addEvent("ended", function(){
+                my.next();
+            });
+
+            this.addEvent("play", function(track){
+                track.audio.muted   = my.muted;
+                track.audio.volume  = (my.options.volume / 100).round(2);
+                dbug.log("volume : " + track.audio.volume);
+                my.isPlaying = true; 
+            });
+
+            this.addEvent("pause", function(){
+                my.isPlaying = false;
+            });            
+        } catch(e){
+            dbug.log(e);
+        }
+
   },
   inject: function(){
       this.options.parent.grab(this.element);
@@ -117,20 +166,38 @@ var mtAudioPlayer = new Class({
     
     throw("Track " + i + " is not in the playlist");
   },
-  addTrack: function(so){
-      if(typeof so == "object"){
-          if(!so.file)
-            throw("addTrack requires either a String or an object with a file attribute as an argument");
-          if(!so.audio)
-            so.audio = new Audio("");
-          if(!so.pos)
-            so.pos = 0;
-            
-          this.tracks.set(so.file, so);
-      } else if(typeof so == "string"){
-        this.tracks.set(so, { file : so, pos : 0, audio : new Audio("")});
+  addTrack: function(track){      
+      if(typeof track == "string"){
+          arr[track] = { file: track, pos : 0, audio : new Audio("") }
+      } else if(typeof track == "object"){
+          if(track[this.format]){
+              track.pos     = track.pos ? track.pos : 0;
+              track.audio   = new Audio("");
+              track.file    = track[this.format];
+              track.name    = track.name ? track.name : this.formatName(track.file);
+              this.tracks[track.name] = track;
+          }
       }
       
+      return this;
+  },
+  getVolume : function(){
+      return (this.getTrack().audio.volume * 100).round();
+  },
+  setVolume : function(v){
+      v = v > 100 ? 100 : v;
+      this.options.volume = v;
+      this.getTrack().audio.volume = (v / 100);
+      return this;
+  },
+  mute: function(){
+      if(this.getTrack().audio.muted){
+        this.getTrack().audio.muted = false;
+        this.muted = false;
+        return this;  
+      } 
+      this.getTrack().audio.muted = true;
+      this.muted = true;
       return this;
   },
   rmTrack: function(t){
@@ -141,53 +208,45 @@ var mtAudioPlayer = new Class({
     }
     return this;
   },
+  // call playing to determine which way the toggle went
   toggle : function(){
+      dbug.log("mtAudioPlayer::toggle()");
       if(this.isPlaying){
         this.pause();
-        return "play";
       } else {
         this.play();
-        return "pause";
       }
-      
-  },
-  playReady: function(){
-      var t = this.getTrack();
-      if(t.audio.readyState == t.audio.HAVE_ENOUGH_DATA){
-          if(t.pos == t.audio.duration)
-            t.pos = 0;
-          this.seek(t.pos);
-          t.audio.play();
-          this.playing();
-          $clear(this.prTimer);
-      }
-  },
-  playing: function(){
-      this.isPlaying = true;
-      this.resetNextTimer();
-      this.fireEvent("playing", this.getTrack().file);
+      return this;
   },
   play: function(t){
+      dbug.log("mtAudioPlayer::play()");
       var t    = this.getTrack(t);
 
-      if(!t.audio.get("src"))
-        t.audio.set("src", t.file);
+      if(!t.audio.get("src")){
+          t.audio.set("src", t.file);  
+          this.addEvents(t);
+      }
+        
       if(t.audio.readyState <= t.audio.HAVE_CURRENT_DATA){
           if(!this.soundCheck.check(this.getMediaType(t.file))){
             this.fireEvent("error",4);
             return;
           }
           this.fireEvent("loading", t.file);
+          t.audio.addEventListener("canplaythrough", function(){
+             t.audio.play(); 
+          }.bind(this),true);
           t.audio.load();
       } 
 
-      this.drTimer = this.setDuration.periodical(250, this);
-      this.srTimer = this.seek.periodical(2500, this);      
-      this.prTimer = this.playReady.periodical(250, this);
+      t.audio.play();
 
       this.cacheNext();
 
       return this;
+  },
+  playing : function(){
+      return !this.getTrack().audio.paused();
   },
   next : function(){
     this.nextTimer && $clear(this.nextTimer);
@@ -209,9 +268,11 @@ var mtAudioPlayer = new Class({
     this.play();
   },
   pause: function(){
-    this.getTrack().pos = this.getPosition();
-    this.getTrack().audio.pause();
-    this.isPlaying = false;
+        dbug.log("mtAudioPlayer::pause()");
+  
+        this.getTrack().pos = this.getPosition();
+        this.getTrack().audio.pause();
+        this.isPlaying = false;
     
     return this;
   },
@@ -227,35 +288,47 @@ var mtAudioPlayer = new Class({
          t.pos = 0; 
       });
   },
-  resetNextTimer : function(){
-      if(this.nextTimer){
-        $clear(this.nextTimer);
-        this.nextTimer = this.next.delay((this.duration - this.getPosition()) * 1000, this);
-      }
-  },
   setDuration : function(){
     var t = this.getTrack();
     if(t.audio.readyState >= t.audio.HAVE_METADATA){
       this.duration = t.audio.duration;
-      this.drTimer && $clear(this.drTimer);        
     }
   },
+  getDuration : function(){
+      return this.getTrack().audio.duration;
+  },
   seek: function(s){
+      dbug.log("mtAudioPlayer::seek("+s+")");
     var t = this.getTrack();
     if(t.audio.readyState == t.audio.HAVE_NOTHING)
       return;
     s = !!s ? s : t.pos;
 
-    if(!!t.audio.seekable && t.audio.seekable.end() >= s){
-      t.audio.currentTime = s;
-      this.resetNextTimer();
-      this.srTimer && $clear(this.srTimer);   
-    }
+    
+    if(!!t.audio.seekable){
+        if(t.audio.seekable.end() <= s){
+            s = t.audio.seekable.end();
+        }
+    } 
+    
+    t.audio.currentTime = s; 
+    
         
     return this;
   },
   getPosition: function(){
     return this.getTrack().audio.currentTime;
+  },
+  formatName : function(f){
+      f =  f.substring(0,f.lastIndexOf(".")).replace(/_/g," ");
+
+      if(f.indexOf("/"))
+          f = f.substring(f.lastIndexOf("/") + 1); 
+
+      return decodeURI(f);
+  },
+  getPlaylist : function(){
+      return this.tracks;
   }
   
 });

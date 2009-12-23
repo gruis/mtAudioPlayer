@@ -1,0 +1,121 @@
+.mtAPlayerUI{
+    width:300px;
+    height:52px;
+    padding:15px 10px 10px;
+    background: #a1a4a6 url(playerBG.png) repeat-x scroll 0 0;
+    border:1px solid #aeaeae;
+    margin:0 auto 100px;
+    position:relative;
+}
+
+.mtAPlayerUI .buttons{
+    margin-top:8px;
+}
+
+.mtAPlayerUI .button{
+    padding:16px;
+    font-size:0pt;
+    color:transparent;
+    margin:0 10px;
+    
+}
+.mtAPlayerUI .toggle{
+    background: url(play.png) no-repeat;
+    padding:24px;
+}
+.mtAPlayerUI .toggle.play{
+    background: url(pause.png) no-repeat;
+}
+.mtAPlayerUI .toggle.pause{
+    background: url(play.png) no-repeat;
+}
+
+.mtAPlayerUI .prev{
+    background: url(prev.png) no-repeat;
+
+}
+.mtAPlayerUI .next{
+    background: url(next.png) no-repeat;
+}
+
+.mtAPlayerUI .stop{
+    background: url(stop.png) no-repeat;
+    padding:19px;
+}
+
+.mtAPlayerUI .readout{
+    position:absolute;
+    bottom:14px;
+    right:0px;
+    z-index:4;
+}
+.mtAPlayerUI .pos, .mtAPlayerUI .dur, .mtAPlayerUI .name{
+    font-size:9px;
+    margin:7px;
+}
+
+.mtAPlayerUI .mute{
+    font-size:7pt;
+    color:black;
+    padding:0;
+}
+
+.mtAPlayerUI .prog-box {
+    height:12px;
+    width:200px;
+    
+    
+    position:absolute;
+    bottom:1px;
+    right:0;
+    z-index:2;
+}
+
+.mtAPlayerUI .prog-bar {
+    -moz-background-clip:border;
+    -moz-background-inline-policy:continuous;
+    -moz-background-origin:padding;
+
+    -moz-border-radius: 3px; 
+    -webkit-border-radius: 3px;
+    -border-radius: 3px;
+
+
+    background:#cccccc none repeat scroll 0 0;
+    height:12px;
+}
+
+
+.mtAPlayerUI .buff-box {
+    height:12px;
+    width:200px;
+    
+    
+    position:absolute;
+    bottom:1px;
+    right:0;
+    z-index:1;
+}
+
+.mtAPlayerUI .buff-bar {
+    -moz-background-clip:border;
+    -moz-background-inline-policy:continuous;
+    -moz-background-origin:padding;
+
+    -moz-border-radius: 3px; 
+    -webkit-border-radius: 3px;
+    -border-radius: 3px;
+
+
+    background:#bbb none repeat scroll 0 0;
+    height:12px;
+}
+
+
+.mtAPlayerUI.shrunk .readout .name{
+    position:absolute;
+    left:-250px;
+    top:2px;
+    z-index:4;
+}
+    

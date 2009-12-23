@@ -21,17 +21,21 @@
     
     <script type="text/javascript" charset="utf-8">
         var mooTunes, playlist;
-        playlist = [{mp3:"mp3/Truth of the Legend.mp3",ogg:"ogg/Truth of the Legend.ogg"}, {mp3:"mp3/MTA.mp3",ogg:"ogg/MTA.ogg"}, {mp3:"mp3/What You Want ver 2.mp3",ogg:"ogg/What You Want ver 2.ogg"}];        
-
+        playlist = [{mp3:"http://music.incompetech.com/royalty-free/Enter%20the%20Party.mp3"},
+                    {mp3:"http://mtap.simulacre.org/mp3/Future Cha Cha.mp3", ogg:"http://mtap.simulacre.org/ogg/Future Cha Cha.ogg"}, 
+                    {mp3:"http://mtap.simulacre.org/mp3/Truth of the Legend.mp3", ogg:"http://mtap.simulacre.org/ogg/Truth of the Legend.ogg"}, 
+                    {mp3:"http://mtap.simulacre.org/mp3/MTA.mp3", ogg:"http://mtap.simulacre.org/ogg/MTA.ogg"}, 
+                    {mp3:"http://mtap.simulacre.org/mp3/What You Want ver 2.mp3", ogg:"http://mtap.simulacre.org/ogg/What You Want ver 2.ogg"}];
+                    
         window.addEvent("domready", function(){
-            if(! new AudioCheck().check()){
+            if(!new AudioCheck().check()){
                 document.body.adopt(new Element("p", { html : "Your browser does not HTML5 audio"}));
                 return;
             }
            mooTunes = new mtAudioPlayerUI( { player : new mtAudioPlayer({ tracks : playlist, auto : true }) }).inject();
-           
         });
     </script>
+    
 </head>
 
 
@@ -42,7 +46,8 @@
         <li><a href="https://developer.mozilla.org/En/nsIDOMHTMLMediaElement">Mozilla (nsIDOMHTMLMediaElement)</a></li>
         <li><a href="https://developer.mozilla.org/en/HTML/Element/audio">Mozilla (audio)</a></li>
         <li><a href="http://dev.w3.org/html5/spec/Overview.html#timeranges">W3C</a></li>
-    </ul>    
+    </ul>
+    
     
 
 </body>

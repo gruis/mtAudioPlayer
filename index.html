@@ -10,26 +10,65 @@
     <script type="text/javascript" src="/js/AudioCheck-nc.js"></script>
     <script type="text/javascript" src="/js/mtAudioPlayer-nc.js"></script>
     <script type="text/javascript" src="/js/mtAudioPlayerUI-nc.js"></script>
+    <script type="text/javascript" src="/js/mtAudioPlaylist-nc.js"></script>
 
     <style type="text/css" media="screen">
-        .mtAPlayerUI{
+        #mooTunes{
             margin:0 auto 100px;
+            width:300px;
         }
     </style>
         
     <link rel="stylesheet" href="css/mooTunes/mooTunes-nc.css" type="text/css" media="screen" title="mtAudio Player Style Sheet" charset="utf-8">
     
     <script type="text/javascript" charset="utf-8">
-        var mooTunes, playlist;
-        playlist = [{mp3:"mp3/Truth of the Legend.mp3",ogg:"ogg/Truth of the Legend.ogg"}, {mp3:"mp3/MTA.mp3",ogg:"ogg/MTA.ogg"}, {mp3:"mp3/What You Want ver 2.mp3",ogg:"ogg/What You Want ver 2.ogg"}];        
+        var mooTunes, playlist, mtPlayer, tinyToggle, tinyToggleTimer;
+
+        tinyToggle = function(){
+            this.name.fade("toggle");
+            this.artist.fade("toggle");
+        }
+        
+        
 
         window.addEvent("domready", function(){
             if(! new AudioCheck().check()){
                 document.body.adopt(new Element("p", { html : "Your browser does not HTML5 audio"}));
                 return;
             }
-           mooTunes = new mtAudioPlayerUI( { player : new mtAudioPlayer({ tracks : playlist, auto : true }) }).inject();
-           
+            
+           playlist = [ {artist : "Kevin MacLeod", mp3:"mp3/Truth of the Legend.mp3",ogg:"ogg/Truth of the Legend.ogg"}, 
+                        {artist : "Kevin MacLeod", mp3:"mp3/MTA.mp3",ogg:"ogg/MTA.ogg"}, 
+                        {artist : "Kevin MacLeod", mp3:"mp3/What You Want ver 2.mp3",ogg:"ogg/What You Want ver 2.ogg"}, 
+                        {artist : "Kevin MacLeod", mp3:"mp3/Chase.mp3",ogg:"ogg/Chase.ogg"},
+                        {artist : "Kevin MacLeod", mp3:"mp3/Exciting Trailer.mp3",ogg:"ogg/Exciting Trailer.ogg"},
+                        {artist : "Kevin MacLeod", mp3:"mp3/Faceoff.mp3",ogg:"ogg/Faceoff.ogg"},
+                        {artist : "Kevin MacLeod", mp3:"mp3/Heavy Interlude.mp3",ogg:"ogg/Heavy Interlude.ogg"},
+                        {artist : "Kevin MacLeod", mp3:"mp3/Just Nasty.mp3",ogg:"ogg/Just Nasty.ogg"}
+                        ];        
+     
+
+            
+           playlist = new mtAudioPlaylist( { tracks : playlist, parent : $("mooTunes") });
+
+           mtPlayer = new mtAudioPlayer({ auto : true, volume : 10, tracks : playlist })
+                playlist.setPlayer(mtPlayer);
+        
+           mooTunes = new mtAudioPlayerUI( mtPlayer, { player : mtPlayer, parent : $('mooTunes'), noShrinker : $('mooTunes'), shrinkable : true, 
+                                            onShrink : function(){ 
+                                                    $(playlist).fade("out");
+                                                    mooTunes.readoutElems.artist.fade("hide");
+                                                    tinyToggleTimer = tinyToggle.periodical(2500, mooTunes.readoutElems);
+                                            }, 
+                                            onGrow : function(){ 
+                                                $(playlist).fade("in"); 
+                                                tinyToggleTimer = $clear(tinyToggleTimer); 
+                                                 mooTunes.readoutElems.name.fade("show");
+                                                 mooTunes.readoutElems.artist.fade("show");
+                                            } 
+                                            }).inject();
+           playlist.inject();
+
         });
     </script>
 </head>
@@ -42,7 +81,14 @@
         <li><a href="https://developer.mozilla.org/En/nsIDOMHTMLMediaElement">Mozilla (nsIDOMHTMLMediaElement)</a></li>
         <li><a href="https://developer.mozilla.org/en/HTML/Element/audio">Mozilla (audio)</a></li>
         <li><a href="http://dev.w3.org/html5/spec/Overview.html#timeranges">W3C</a></li>
+        <li><a href="http://en.wikipedia.org/wiki/Use_of_Ogg_formats_in_HTML5">Ogg in HTML5</a></li>
+        <li><a href="http://jssoundkit.sourceforge.net/">Javascript Sound Kit</a></li>
+        <li><a href="http://incompetech.com/m/c/royalty-free/">Kevin MacLeod Music</a></li>
     </ul>    
+    
+    <div id="mooTunes">
+        
+    </div>
     
 
 </body>

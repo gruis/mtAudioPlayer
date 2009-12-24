@@ -1,22 +1,36 @@
-.mtAPlayerUI{
-    width:300px;
-    height:52px;
-    padding:15px 10px 10px;
-    background: #a1a4a6 url(playerBG.png) repeat-x scroll 0 0;
-    border:1px solid #aeaeae;
-    margin:0 auto 100px;
+#mooTunes{
     position:relative;
 }
 
+
+.mtAPlayerUI{
+    width:390px;
+    height:42px;
+    padding:15px 10px 10px;
+    background: #a1a4a6 url(playerBG.png) repeat-x scroll 0 0;
+    border:1px solid #aeaeae;
+    position:relative;
+    z-index:2;
+    
+    -moz-border-radius: 8px; 
+    -webkit-border-radius: 8px;
+    -border-radius: 8px;
+    
+    -webkit-box-shadow: 3px 5px 12px #8b8c8d;
+    -moz-box-shadow: 3px 5px 12px #8b8c8d;
+    
+    font-family: sans-serif;
+}
+
 .mtAPlayerUI .buttons{
-    margin-top:8px;
+    margin-top:13px;
 }
 
 .mtAPlayerUI .button{
     padding:16px;
     font-size:0pt;
     color:transparent;
-    margin:0 10px;
+    margin:0 1px;
     
 }
 .mtAPlayerUI .toggle{
@@ -46,12 +60,44 @@
 .mtAPlayerUI .readout{
     position:absolute;
     bottom:14px;
-    right:0px;
+    right:10px;
     z-index:4;
+    height:44px;
+    width:250px;
+    background: #f4f7e4 url(readoutBG.png) repeat-x scroll 0 0;
+    
+    -moz-border-radius: 8px; 
+    -webkit-border-radius: 8px;
+    -border-radius: 8px;
+    
 }
 .mtAPlayerUI .pos, .mtAPlayerUI .dur, .mtAPlayerUI .name{
     font-size:9px;
-    margin:7px;
+    overflow:hidden;
+}
+.mtAPlayerUI .pos, .mtAPlayerUI .dur{
+    position:absolute;
+    bottom:3px;
+}
+.mtAPlayerUI .pos{
+    left:10px;
+}
+.mtAPlayerUI .dur{
+    right:10px;
+}
+
+.mtAPlayerUI .name{
+    width:100%;
+    text-align:center;
+    font-size:9pt;
+    font-weight:bold;
+    margin-top:4px;
+}
+
+.mtAPlayerUI .artist{
+    width:100%;
+    text-align:center;
+    font-size:7pt;
 }
 
 .mtAPlayerUI .mute{
@@ -62,13 +108,13 @@
 
 .mtAPlayerUI .prog-box {
     height:12px;
-    width:200px;
+    width:150px;
     
     
     position:absolute;
-    bottom:1px;
-    right:0;
-    z-index:2;
+    bottom:0px;
+    right:50px;
+    z-index:4;
 }
 
 .mtAPlayerUI .prog-bar {
@@ -80,21 +126,20 @@
     -webkit-border-radius: 3px;
     -border-radius: 3px;
 
-
-    background:#cccccc none repeat scroll 0 0;
-    height:12px;
+    background:#a8ac96 url(progressBG.png) repeat-x scroll 0 0;
+    height:7px;
 }
 
 
 .mtAPlayerUI .buff-box {
     height:12px;
-    width:200px;
+    width:150px;
     
     
     position:absolute;
-    bottom:1px;
-    right:0;
-    z-index:1;
+    bottom:0px;
+    right:50px;
+    z-index:3;
 }
 
 .mtAPlayerUI .buff-bar {
@@ -107,15 +152,133 @@
     -border-radius: 3px;
 
 
-    background:#bbb none repeat scroll 0 0;
-    height:12px;
+    background:#646754 url(progressFG.png) repeat-x scroll 0 0;
+    height:7px;
 }
 
+
+.mtAPlayerUI.shrunk .readout{
+    height:21px;
+    bottom:3px;
+}
+
+.mtAPlayerUI.shrunk .volume{
+    display:none;
+}
+
+.mtAPlayerUI.shrunk .buttons{
+    display:none;
+}
 
 .mtAPlayerUI.shrunk .readout .name{
     position:absolute;
-    left:-250px;
+    left:-145px;
+    width:143px;
     top:2px;
     z-index:4;
 }
+.mtAPlayerUI.shrunk .readout .artist{
+    position:absolute;
+    left:-145px;
+    width:143px;
+    top:2px;
+    z-index:4;
+    font-size:9pt;
+    font-weight:bold;
+    margin-top:4px;
+}
+
+
+.mtAPlayerUI .volume{
+    width:150px;
+    position:relative;
+    bottom:-22px;
+    left:5px;
+}
+.mtAPlayerUI .volume .down, .mtAPlayerUI .volume .up{
+    position:absolute;
+    padding:6px;
+    font-size:0pt;
+    color:transparent;
+}
+.mtAPlayerUI .volume .up{
+    left:100px;
+    background:#a6adab url(soundUp.png) no-repeat scroll 0 0;
+}
+.mtAPlayerUI .volume .down{
+    background:#a6adab url(soundDown.png) no-repeat scroll 0 0;
+}
+
+
+.mtAPlayerUI .vol-box {
+    width:80px;
+
+    background:#727373 url(volBG.png) repeat-x scroll 0 0;
+    height:7px;
     
+    position:absolute;
+    left:15px;
+    bottom:-13px;
+    z-index:4;
+
+    -moz-border-radius: 3px; 
+    -webkit-border-radius: 3px;
+    -border-radius: 3px;
+}
+
+.mtAPlayerUI .vol-bar {
+    -moz-background-clip:border;
+    -moz-background-inline-policy:continuous;
+    -moz-background-origin:padding;
+
+    -moz-border-radius: 3px; 
+    -webkit-border-radius: 3px;
+    -border-radius: 3px;
+
+    background:#b8b9bb url(volFG.png) repeat-x scroll 0 0;
+
+    height:7px;
+    position:absolute;
+    left:1px;
+    bottom:0;    
+}
+
+
+
+
+    
+ol.mtAPlaylist{
+    font-size:8pt;
+    background-color:#f5f5f5;
+    border:1px solid #d6d6d6;
+    padding:10px 10px 5px 25px;
+    position:relative;
+    bottom:12px;
+    left:5px;
+    z-index:1;
+    width:365px;
+
+    -moz-border-radius-bottomleft: 8px; 
+    -moz-border-radius-bottomright: 8px; 
+
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+
+    -border-bottom-left-radius: 8px;
+    -border-bottom-right-radius: 8px;
+    
+    -webkit-box-shadow: 3px 5px 7px #8b8c8d;
+    -moz-box-shadow: 3px 5px 7px #8b8c8d;    
+}
+
+li.track{
+    padding: 3px 0 3px 3px;
+    border-bottom:1px solid #e6e6e6;
+}
+li.track.active{
+    font-weight:bold;
+}
+li.track:hover{
+    background-color: #f5f8fb;
+    cursor:pointer;
+}

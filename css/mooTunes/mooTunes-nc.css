@@ -40,16 +40,29 @@
 .mtAPlayerUI .toggle.play{
     background: url(pause.png) no-repeat;
 }
+.mtAPlayerUI .toggle.play:active{
+    background: url(pause_down.png) no-repeat;
+}
+
 .mtAPlayerUI .toggle.pause{
     background: url(play.png) no-repeat;
+}
+.mtAPlayerUI .toggle.pause:active{
+    background: url(play_down.png) no-repeat;
 }
 
 .mtAPlayerUI .prev{
     background: url(prev.png) no-repeat;
-
 }
+.mtAPlayerUI .prev:active{
+    background: url(prev_down.png) no-repeat;
+}
+
 .mtAPlayerUI .next{
     background: url(next.png) no-repeat;
+}
+.mtAPlayerUI .next:active{
+    background: url(next_down.png) no-repeat;
 }
 
 .mtAPlayerUI .stop{

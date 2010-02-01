@@ -50,18 +50,19 @@
 
             
            playlist = new mtAudioPlaylist( { tracks : playlist, parent : $("mooTunes") });
-
+           $(playlist).store("shrink", new Fx.Tween($(playlist), { onComplete: function(){ dbug.log("complete"); $(playlist).setStyle("display", "none"); } } ));
+           
            mtPlayer = new mtAudioPlayer({ auto : true, volume : 10, tracks : playlist })
                 playlist.setPlayer(mtPlayer);
-        
+          
            mooTunes = new mtAudioPlayerUI( mtPlayer, { player : mtPlayer, parent : $('mooTunes'), noShrinker : $('mooTunes'), shrinkable : true, 
                                             onShrink : function(){ 
-                                                    $(playlist).fade("out");
+                                                    $(playlist).retrieve("shrink").start("opacity",0);
                                                     mooTunes.readoutElems.artist.fade("hide");
                                                     tinyToggleTimer = tinyToggle.periodical(2500, mooTunes.readoutElems);
                                             }, 
                                             onGrow : function(){ 
-                                                $(playlist).fade("in"); 
+                                                $(playlist).fade("in").setStyle("display", ""); 
                                                 tinyToggleTimer = $clear(tinyToggleTimer); 
                                                  mooTunes.readoutElems.name.fade("show");
                                                  mooTunes.readoutElems.artist.fade("show");

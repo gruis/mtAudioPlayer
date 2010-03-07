@@ -100,7 +100,8 @@ IdleTimer = new Class({
 	 */
 	bind: function() {
 		for(var i in this.options.events) {
-			this.element.addEvent(this.options.events[i], this.activeBound);
+		    // modified by Caleb Crane to do type checking
+		    $type(this.options.events[i]) == "string" && this.element.addEvent(this.options.events[i], this.activeBound);
 		}
 		this.bound = true;
 		this.fireEvent('start');
